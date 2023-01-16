@@ -165,7 +165,7 @@ def print_payload():
 def reset_payload():
     global payload
     payload = payload_prefix
-
+    print("[+] Payload reset")
 
 def save_payload():
     global reg_filename, payload
@@ -175,6 +175,7 @@ def save_payload():
         reg_filename = alt_filename
     with open(reg_filename, "wt") as f:
         f.write(payload)
+        print(f"[+] Payload saved as {reg_filename}")
 
 
 def main_screen():
@@ -183,7 +184,7 @@ def main_screen():
         print("[1] Add persistence")
         print("[2] Add Run key persistence with UAC bypass")
         print("[3] Mess with registry settings")
-        print("[4] Add obfuscation")
+        print("[4] Add obfuscation (recommended to do after all functionalities were added)")
         print("[5] Print payload")
         print("[6] Reset payload")
         print("[7] Save payload")
