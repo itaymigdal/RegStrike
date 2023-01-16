@@ -10,7 +10,7 @@ regstrike_banner = """
        https://github.com/itaymigdal/RegStrike
        By Itay Migdal
     """
-reg_file_name = "hi.reg"
+reg_filename = "hi.reg"
 payload_prefix = "Windows Registry Editor Version 5.00\n"
 payload = payload_prefix
 template_run = r"""
@@ -168,7 +168,13 @@ def reset_payload():
 
 
 def save_payload():
-    pass
+    global reg_filename, payload
+    print(f"[>] Enter output file: (ENTER for default: {reg_filename})")
+    alt_filename = input(">> ")
+    if alt_filename != "":
+        reg_filename = alt_filename
+    with open(reg_filename, "wt") as f:
+        f.write(payload)
 
 
 def main_screen():
@@ -203,11 +209,7 @@ def main_screen():
             print("[-] No such option :(")
 
 
-def main():
+if __name__ == '__main__':
     print(regstrike_banner)
     main_screen()
-
-
-if __name__ == '__main__':
-    main()
     
