@@ -162,7 +162,7 @@ def mess_with_registry():
 def add_obfuscation(obf_length):
     global payload
     obfuscated_payload = b""
-    splited_payload = payload.split("\n")[1:]
+    splited_payload = payload.split("\n")
     obf_len_per_line = int(obf_length / splited_payload.count(""))
 
     for splited in splited_payload:
